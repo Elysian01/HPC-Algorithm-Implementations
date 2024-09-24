@@ -1,0 +1,24 @@
+To run cpp in optimized way use "02" or "O3" flag during complilation
+Eg. gcc -O file.c
+
+To set TILE_SIZE in MM, use "lscpu" cmd to see the cache size
+
+Copy from remote server: scp -r MT2023046@172.16.201.151:mm ./
+
+
+gcc -O3 single_node.c 
+MT2023046@iiitb-vm:~/mm$ ./a.out 
+Matrix Multiplication time 364937.593750 usecs
+
+MT2023046@iiitb-vm:~/mm$ gcc -O3 loop_inversion.c 
+MT2023046@iiitb-vm:~/mm$ ./a.out 
+Matrix Multiplication time 118546.000000 usecs
+
+MT2023046@iiitb-vm:~/mm$ gcc -O3 tiling.c 
+MT2023046@iiitb-vm:~/mm$ ./a.out 
+Matrix Multiplication time 117088.500000 usecs
+
+MT2023046@iiitb-vm:~/mm$ gcc -O3 parallelization.c 
+MT2023046@iiitb-vm:~/mm$ ./a.out 
+Matrix Multiplication time 120206.796875 usecs
+ 
