@@ -6,13 +6,13 @@ High Performance Computing Algorithms
 
 ### Session - 2
 
-1. [MPI Hello World Program]()
-2. [MPI All Reduce Algorithm]()
+1. [MPI Hello World Program](./mpi_algorithm/mpi_helloworld.c)
+2. [MPI All Reduce Algorithm](./mpi_algorithm/mpi_allreduce.c)
    
 ### Session - 3
 
-1. [MPI Latency]()
-2. [MPI Bandwidth]()
+1. [MPI Latency](./mpi_algorithm/mpi-latency.c)
+2. [MPI Bandwidth](./mpi_algorithm/mpi-bw.c)
    
 ### Session - 4
 
