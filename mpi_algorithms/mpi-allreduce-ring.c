@@ -12,6 +12,7 @@ int main(int argc, char **argv) {
   int *ring_dst=NULL, *tmp=NULL;
   int send_peer, recv_peer;
   int i, j;
+  int base_index;
   int stride;
   struct timeval start, end;
   float total_time=0;
@@ -52,8 +53,11 @@ int main(int argc, char **argv) {
   }
 
 
-  memcpy(tmp, src, sizeof(int)*max_size); 
+  memcpy(tmp, src, sizeof(int)*max_size);
+  memcpy(ring_dst, src, sizeof(int)*max_size);
+
   stride = max_size/size;
+  base_index = rank*stride;
 
   /* reduce-scatter phase */
   for(i=0;i<size-1;i++) {
@@ -61,23 +65,20 @@ int main(int argc, char **argv) {
     recv_peer = (rank - 1 + size) % size;
    
     /* FIXME tmp/src index */
-    if (i==0) {
-    	MPI_Isend(&src[send_peer*stride], stride, MPI_INT, send_peer, 1, MPI_COMM_WORLD, &send_request[0]);
-    } else {
-    	MPI_Isend(&tmp[send_peer*stride], stride, MPI_INT, send_peer, 1, MPI_COMM_WORLD, &send_request[0]);
-    }
+    MPI_Isend(&ring_dst[base_index], stride, MPI_INT, send_peer, 1, MPI_COMM_WORLD, &send_request[0]);
     
     /* FIXME the tmp array index */
-    MPI_Irecv(&tmp[recv_peer*stride], stride, MPI_INT, recv_peer, 1, MPI_COMM_WORLD, &recv_request[0]);
+    MPI_Irecv(&tmp[0], stride, MPI_INT, recv_peer, 1, MPI_COMM_WORLD, &recv_request[0]);
    
     MPI_Waitall(1, send_request, status);
     MPI_Waitall(1, recv_request, status);
-   
+    base_index = (base_index - stride + max_size)%max_size;
+
+
     /* reduction */
     for(j=0;j<stride;j++) {
     /* FIXME the ring_dst and tmp array index */
-       tmp[rank*stride+j] += tmp[i*stride+j];
-       ring_dst[]
+       ring_dst[base_index+j] += tmp[j];
      }
   }
 
@@ -88,12 +89,13 @@ for(i=0;i<size-1;i++) {
     recv_peer = (rank - 1 + size) % size;
     
     /* FIXME tmp index */
-    MPI_Isend(&tmp[send_peer*stride], stride, MPI_INT, send_peer, 1, MPI_COMM_WORLD, &send_request[0]);
+    MPI_Isend(&ring_dst[base_index], stride, MPI_INT, send_peer, 1, MPI_COMM_WORLD, &send_request[0]);
     /* FIXME the ring_dst array index */
-    MPI_Irecv(&ring_dst[recv_peer*stride], stride, MPI_INT, recv_peer, 1, MPI_COMM_WORLD, &recv_request[0]);
+    MPI_Irecv(&ring_dst[(base_index - stride + max_size)%max_size], stride, MPI_INT, recv_peer, 1, MPI_COMM_WORLD, &recv_request[0]);
     
     MPI_Waitall(1, send_request, status);
     MPI_Waitall(1, recv_request, status);
+    base_index = (base_index - stride + max_size)%max_size;
 }
 
   if(memcmp(dst, ring_dst, max_size*sizeof(int)))
