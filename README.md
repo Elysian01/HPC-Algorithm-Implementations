@@ -20,4 +20,8 @@ High Performance Computing Algorithms
 
 ### Session - 5
 
-1. [MPI ](./mpi_algorithm/)
+1. [MPI Ring Alogrithm](./mpi_algorithm/mpi-allreduce-ring.c)
+
+### Session - 5
+
+1. [MPI Rabenseifner's Alogrithm](./mpi_algorithm/mpi-allreduce-rb.c)
